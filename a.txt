@@ -1,0 +1,13 @@
+(define (make-chicken)
+  (lambda ()
+    "🍗"))
+
+(define (make-apple)
+  (lambda ()
+    "🍎"))
+
+(define chicken1 (make-chicken))
+(define apple1 (make-apple))
+
+(display (chicken1))
+(display (apple1))
