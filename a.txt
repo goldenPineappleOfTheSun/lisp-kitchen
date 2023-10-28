@@ -6,8 +6,19 @@
   (lambda ()
     "🍎"))
 
+(define (make-fridge . items)
+  (lambda (cmd . args)
+    (cond 
+      ((eq? cmd 'print) (map (lambda (item) (item)) items))
+      ((eq? cmd 'add) (apply make-fridge (cons (car args) items)))
+     )))
+
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
+(define apple2 (make-apple))
+(define empty-fridge (make-fridge))
+(define full-fridge (((empty-fridge 'add chicken1) 'add apple1) 'add apple2))
 
 (display (chicken1))
 (display (apple1))
+(display (full-fridge 'print))
