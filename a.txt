@@ -10,14 +10,14 @@
   (lambda (cmd . args)
     (cond 
       ((eq? cmd 'print) (map (lambda (item) (item)) items))
-      ((eq? cmd 'add) (apply make-fridge (cons (car args) items)))
+      ((eq? cmd 'put) (apply make-fridge (append items args)))
      )))
 
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
 (define apple2 (make-apple))
 (define empty-fridge (make-fridge))
-(define full-fridge (((empty-fridge 'add chicken1) 'add apple1) 'add apple2))
+(define full-fridge (empty-fridge 'put chicken1 apple1 apple2))
 
 (display (chicken1))
 (display (apple1))
