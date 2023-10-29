@@ -6,16 +6,17 @@
          )))
 
 (define (make-chicken)
-  (template-product "Курица" "🍗"))
+  (template-product "chicken" "🍗"))
 
 (define (make-apple)
-  (template-product "Яблоко" "🍎"))
+  (template-product "apple" "🍎"))
 
 (define (make-fridge . items)
   (lambda (cmd . args)
     (cond 
       ((eq? cmd 'print) (map (lambda (item) (item 'print)) items))
       ((eq? cmd 'put) (apply make-fridge (append items args)))
+      ((eq? cmd 'get) (find (lambda (item) (equal? (car args) (item 'name))) items))
      )))
  
 (define chicken1 (make-chicken))
@@ -28,3 +29,4 @@
 (display (apple1 'print))
 (display (apple2 'print))
 (display (full-fridge 'print))
+(display ((full-fridge 'get "apple") 'print))
