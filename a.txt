@@ -1,24 +1,30 @@
+(define (template-product name icon)
+    (lambda (cmd . args)
+        (cond 
+          ((eq? cmd 'print) icon)
+          ((eq? cmd 'name) name)
+         )))
+
 (define (make-chicken)
-  (lambda ()
-    "🍗"))
+  (template-product "Курица" "🍗"))
 
 (define (make-apple)
-  (lambda ()
-    "🍎"))
+  (template-product "Яблоко" "🍎"))
 
 (define (make-fridge . items)
   (lambda (cmd . args)
     (cond 
-      ((eq? cmd 'print) (map (lambda (item) (item)) items))
+      ((eq? cmd 'print) (map (lambda (item) (item 'print)) items))
       ((eq? cmd 'put) (apply make-fridge (append items args)))
      )))
-
+ 
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
 (define apple2 (make-apple))
 (define empty-fridge (make-fridge))
 (define full-fridge (empty-fridge 'put chicken1 apple1 apple2))
 
-(display (chicken1))
-(display (apple1))
+(display (chicken1 'print))
+(display (apple1 'print))
+(display (apple2 'print))
 (display (full-fridge 'print))
