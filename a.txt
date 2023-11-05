@@ -1,3 +1,16 @@
+(define (foldl func initial lst)
+  (if (null? lst)
+      initial
+      (foldl func (func initial (car lst)) (cdr lst))))
+
+; утилита: чейнит вызовы вместе
+(define (>> object . commands)
+    (foldl 
+           (lambda (result cmd) (apply result cmd))
+           object
+           commands))
+
+; интерфейс продукта
 (define (template-product name icon)
     (lambda (cmd . args)
         (cond 
@@ -5,12 +18,15 @@
           ((eq? cmd 'name) name)
          )))
 
+; курица
 (define (make-chicken)
   (template-product "chicken" "🍗"))
 
+; яблоко
 (define (make-apple)
   (template-product "apple" "🍎"))
 
+; интерфейс холодильника
 (define (make-fridge . items)
   (lambda (cmd . args)
     (cond 
@@ -23,10 +39,4 @@
 (define apple1 (make-apple))
 (define apple2 (make-apple))
 (define empty-fridge (make-fridge))
-(define full-fridge (empty-fridge 'put chicken1 apple1 apple2))
-
-(display (chicken1 'print))
-(display (apple1 'print))
-(display (apple2 'print))
-(display (full-fridge 'print))
-(display ((full-fridge 'get "apple") 'print))
+(display (>> empty-fridge (list 'put apple1 apple2 chicken1) (list 'print)))
