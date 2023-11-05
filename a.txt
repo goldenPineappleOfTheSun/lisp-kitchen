@@ -5,10 +5,19 @@
 
 ; утилита: чейнит вызовы вместе
 (define (>> object . commands)
-    (foldl 
-           (lambda (result cmd) (apply result cmd))
-           object
-           commands))
+  (foldl 
+    (lambda (result cmd) (apply result cmd))
+    object
+    commands))
+
+(define (trim count lst)
+  (reverse (car (foldl 
+    (lambda (result item) 
+      (cond
+        ((eq? (cdr result) count) result)
+        (else (cons (cons item (car result)) (+ (cdr result) 1)))))
+    (cons '() 0)
+    lst))))
 
 ; интерфейс продукта
 (define (template-product name icon)
@@ -27,16 +36,16 @@
   (template-product "apple" "🍎"))
 
 ; интерфейс холодильника
-(define (make-fridge . items)
+(define (make-fridge capacity . initial-items)
   (lambda (cmd . args)
     (cond 
-      ((eq? cmd 'print) (map (lambda (item) (item 'print)) items))
-      ((eq? cmd 'put) (apply make-fridge (append items args)))
-      ((eq? cmd 'get) (find (lambda (item) (equal? (car args) (item 'name))) items))
+      ((eq? cmd 'print) (map (lambda (item) (item 'print)) initial-items))
+      ((eq? cmd 'put) (apply make-fridge capacity (trim capacity (append initial-items args))))
+      ((eq? cmd 'get) (find (lambda (item) (equal? (car args) (item 'name))) initial-items))
      )))
  
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
 (define apple2 (make-apple))
-(define empty-fridge (make-fridge))
-(display (>> empty-fridge (list 'put apple1 apple2 chicken1) (list 'print)))
+(define empty-fridge (make-fridge 5))
+(display (>> empty-fridge (list 'put apple1 apple2 chicken1 apple1 apple2 chicken1 apple1 apple2 chicken1) (list 'print)))
