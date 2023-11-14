@@ -25,7 +25,7 @@
         (cond 
           ((eq? cmd 'print) icon)
           ((eq? cmd 'name) name)
-         )))
+        )))
 
 ; курица
 (define (make-chicken)
@@ -42,7 +42,7 @@
       ((eq? cmd 'print) (map (lambda (item) (item 'print)) initial-items))
       ((eq? cmd 'put) (apply make-fridge capacity (trim capacity (append initial-items args))))
       ((eq? cmd 'get) (find (lambda (item) (equal? (car args) (item 'name))) initial-items))
-     )))
+    )))
 
 ; морозильник
 (define (make-freezer capacity . initial-items)
@@ -67,7 +67,7 @@
 		      					capacity freezer-capacity 
 		      					(trim capacity (append initial-items args)) 
 		      					initial-freezer-items))
-		      ((eq? cmd 'get) (apply fridge args))
+		      ((eq? cmd 'get) (apply fridge (cons cmd args)))
 		      ((eq? cmd 'print-freezer) (apply freezer (cons 'print (cdr args))))
 		      ((eq? cmd 'put-freezer) (apply freezer (cons 'put (cdr args))))
 		      ((eq? cmd 'get-freezer) (apply freezer (cons 'get (cdr args))))
@@ -79,4 +79,6 @@
 (define apple1 (make-apple))
 (define apple2 (make-apple))
 (define empty-fridge (make-fridge 5 2))
-(display (>> empty-fridge (list 'put apple1 apple2 chicken1 apple1 apple2 chicken1 apple1 apple2 chicken1) (list 'print)))
+(define full-fridge (empty-fridge 'put apple1 apple2 chicken1 apple1 apple2 chicken1 apple1 apple2 chicken1))
+(display (full-fridge 'print))
+(display (>> full-fridge (list 'get "apple") (list 'print)))
