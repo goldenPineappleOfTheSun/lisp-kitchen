@@ -35,17 +35,48 @@
 (define (make-apple)
   (template-product "apple" "🍎"))
 
-; интерфейс холодильника
-(define (make-fridge capacity . initial-items)
+; интерфейс хранилища
+(define (template-storage capacity . initial-items)
   (lambda (cmd . args)
     (cond 
       ((eq? cmd 'print) (map (lambda (item) (item 'print)) initial-items))
       ((eq? cmd 'put) (apply make-fridge capacity (trim capacity (append initial-items args))))
       ((eq? cmd 'get) (find (lambda (item) (equal? (car args) (item 'name))) initial-items))
      )))
+
+; морозильник
+(define (make-freezer capacity . initial-items)
+	(apply template-storage (cons capacity initial-items)))
+
+; полки
+(define (make-shelves capacity . initial-items)
+	(apply template-storage (cons capacity initial-items)))
+
+; холодильник
+(define (make-fridge capacity freezer-capacity) ; фасад
+    
+	(define (make-fridge-inner capacity freezer-capacity initial-items initial-freezer-items)
+	    
+		(let ((fridge (apply make-freezer (cons capacity initial-items)))
+			  (freezer (apply template-storage (cons freezer-capacity '()))))
+	
+		  (lambda (cmd . args)
+		    (cond 
+		      ((eq? cmd 'print) (apply fridge (cons cmd args)))
+		      ((eq? cmd 'put) (make-fridge-inner 
+		      					capacity freezer-capacity 
+		      					(trim capacity (append initial-items args)) 
+		      					initial-freezer-items))
+		      ((eq? cmd 'get) (apply fridge args))
+		      ((eq? cmd 'print-freezer) (apply freezer (cons 'print (cdr args))))
+		      ((eq? cmd 'put-freezer) (apply freezer (cons 'put (cdr args))))
+		      ((eq? cmd 'get-freezer) (apply freezer (cons 'get (cdr args))))
+		     ))))
+		 
+	(make-fridge-inner capacity freezer-capacity '() '()))
  
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
 (define apple2 (make-apple))
-(define empty-fridge (make-fridge 5))
+(define empty-fridge (make-fridge 5 2))
 (display (>> empty-fridge (list 'put apple1 apple2 chicken1 apple1 apple2 chicken1 apple1 apple2 chicken1) (list 'print)))
