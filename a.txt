@@ -58,7 +58,7 @@
 	(define (make-fridge-inner capacity freezer-capacity initial-items initial-freezer-items)
 	    
 		(let ((fridge (apply make-freezer (cons capacity initial-items)))
-			  (freezer (apply template-storage (cons freezer-capacity '()))))
+			  (freezer (apply template-storage (cons freezer-capacity initial-freezer-items))))
 	
 		  (lambda (cmd . args)
 		    (cond 
@@ -75,14 +75,14 @@
 		      					capacity freezer-capacity 
 		      					(trim capacity (append initial-items args)) 
 		      					initial-freezer-items))
-		      ((eq? cmd 'get) (apply fridge (cons cmd args)))
+		      ((eq? cmd 'get) (apply fridge (cons 'get args)))
 		      
 		      ; freezer
 		      ((eq? cmd 'put-freezer) (make-fridge-inner 
 		      					capacity freezer-capacity 
 		      					initial-items
 		      					(trim freezer-capacity (append initial-freezer-items args))))
-		      ((eq? cmd 'get-freezer) (apply freezer (cons cmd args)))
+		      ((eq? cmd 'get-freezer) (apply freezer (cons 'get args)))
 		      
 		     ))))
 		 
@@ -92,7 +92,12 @@
 (define apple1 (make-apple))
 (define apple2 (make-apple))
 (define empty-fridge (make-fridge 5 2))
-(define full-fridge (empty-fridge 'put apple1 apple2 chicken1 apple1 apple2 chicken1 apple1 apple2 chicken1))
+(define full-fridge (>> empty-fridge
+    (list 'put apple1 apple2 apple1)
+    (list 'put-freezer chicken1 chicken1 chicken1)))
+
 (display (full-fridge 'print))
 (newline)
 (display (>> full-fridge (list 'get "apple") (list 'print)))
+(newline)=
+(display (>> full-fridge (list 'get-freezer "chicken") (list 'print)))
