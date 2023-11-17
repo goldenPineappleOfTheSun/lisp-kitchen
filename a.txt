@@ -1,3 +1,8 @@
+(define (object-to-string obj)
+  (let ((port (open-output-string)))
+    (display obj port)
+    (get-output-string port)))
+
 (define (foldl func initial lst)
   (if (null? lst)
       initial
@@ -5,10 +10,28 @@
 
 ; утилита: чейнит вызовы вместе
 (define (>> object . commands)
-  (foldl 
-    (lambda (result cmd) (apply result cmd))
-    object
-    commands))
+  (let ((wrapped (cons object "")))
+		(let ((calculated 
+			(foldl 
+				(lambda (result cmd) 
+				  (if (equal? (cdr result) "")
+				  	
+				  	; true
+				  	(let ((temp (apply (car result) cmd))) 
+				  		(if (procedure? temp)
+					  		(cons temp "")
+					  		(cons temp (string-append "The command " (object-to-string cmd) " stopped chaining propagation"))))
+				  	
+				  	; false
+					  result))
+
+				 wrapped
+				 commands)))
+
+				(if (equal? (cdr calculated) "")
+					(car calculated)
+					(cdr calculated))
+		)))
 
 (define (trim count lst)
   (reverse (car (foldl 
@@ -99,5 +122,5 @@
 (display (full-fridge 'print))
 (newline)
 (display (>> full-fridge (list 'get "apple") (list 'print)))
-(newline)=
+(newline)
 (display (>> full-fridge (list 'get-freezer "chicken") (list 'print)))
