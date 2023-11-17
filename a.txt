@@ -44,11 +44,13 @@
 
 ; интерфейс продукта
 (define (template-product name icon)
+	(define (template-product-inner name icon state)
     (lambda (cmd . args)
         (cond 
-          ((eq? cmd 'print) icon)
+          ((eq? cmd 'print) (string-append "【" icon ":" name ":" state "】")) 
           ((eq? cmd 'name) name)
         )))
+  (template-product-inner name icon "Good"))
 
 ; курица
 (define (make-chicken)
