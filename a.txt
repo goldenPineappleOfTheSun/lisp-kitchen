@@ -49,6 +49,7 @@
         (cond 
           ((eq? cmd 'print) (string-append "【" icon ":" name ":" state "】")) 
           ((eq? cmd 'name) name)
+          ((eq? cmd 'fry) (template-product-inner name icon "Fried"))
         )))
   (template-product-inner name icon "Good"))
 
@@ -112,6 +113,13 @@
 		     ))))
 		 
 	(make-fridge-inner capacity freezer-capacity '() '()))
+
+; плита
+(define (make-stove)
+	(lambda (cmd . args)
+    (cond 
+		  ((eq? cmd 'print) "a stove")
+    	((eq? cmd 'cook) ((car args) 'fry)))))
  
 (define chicken1 (make-chicken))
 (define apple1 (make-apple))
@@ -126,3 +134,11 @@
 (display (>> full-fridge (list 'get "apple") (list 'print)))
 (newline)
 (display (>> full-fridge (list 'get-freezer "chicken") (list 'print)))
+(newline)
+
+(define fried-chicken (>> full-fridge (list 'get-freezer "chicken") (list 'fry)))
+(display (fried-chicken 'print))
+(newline)
+(define full-fridge-2 (>> full-fridge (list 'put fried-chicken)))
+(display (full-fridge-2 'print))
+(newline)
